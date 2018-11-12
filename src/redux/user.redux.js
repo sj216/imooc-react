@@ -1,22 +1,27 @@
 import axios from 'axios'
+import {getRedirectPath} from '../util';
 
 const REGISTER_SUCCESS = 'REGISTER_SUCCESS';
 const ERROR_MSG = 'ERROR_MSG';
+const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 
 const initState = {
-  isAuth: false,
-  msg: '',
-  user: '',
-  pwd: '',
-  type: ''
+  isAuth: false, // 是否注册成功
+  msg: '', // 返回的msg
+  user: '', // 用户名
+  pwd: '', // 用户密码
+  type: '', // 用户类型
+  redirectTo: '', // 登陆成功之后用户需要跳转的页面
 }
 
 // reducer
 export function user(state = initState, action) {
   switch (action.type) {
     case REGISTER_SUCCESS:
-      return {...state, mag: '', isAuth: true, ...action.payload};
-    case ERROR_MSG:
+      return {...state, mag: '', redirectTo: getRedirectPath(action.payload), isAuth: true, ...action.payload};
+    case LOGIN_SUCCESS:
+      return {...state, mag: '', redirectTo: getRedirectPath(action.payload), isAuth: true, ...action.payload}
+      case ERROR_MSG:
       return {...state, isAuth: false, msg: action.msg};
     default:
       return state;
@@ -28,6 +33,10 @@ function registerSuccess(data) {
     type: REGISTER_SUCCESS,
     payload: data
   }
+}
+
+function loginSuccess(data) {
+  return {type: LOGIN_SUCCESS, payload:data}
 }
 
 function errorMsg(msg) {
@@ -52,3 +61,21 @@ export function register({user, pwd, repeatpwd, type}) {
     })
   }
 }
+
+export function login({user, pwd}) {
+  if (!user || !pwd) {
+    return errorMsg('用户名密码必须输入')
+  }
+  return dispatch => {
+    axios.post('/user/login', {user, pwd}).then((res) => {
+      // 如果请求成功
+      if (res.status == 200 && res.data.code == 0) {
+        // dispatch(registerSuccess({user, pwd}))
+        dispatch(loginSuccess(res.data))
+      } else {
+        dispatch(errorMsg(res.data.msg))
+      }
+    })
+  }
+}
+
