@@ -14,6 +14,23 @@ Router.get('/list', function (req, res) {
   })
 });
 
+Router.post('/update', function (req, res) {
+  // 先获取一下cookie
+  const userid = req.cookies.userid
+  if (!userid) {
+    return res.json.dumps({code: 1})
+  }
+  const body = req.body;
+  // 两个过程一个是查找id是否存在
+  User.findByIdAndUpdate(userid, body, function (err, doc) {
+    const data = Object.assign({}, {
+      user: doc.user,
+      type: doc.type,
+    }, body)
+    return res.json({code: 0, data})
+  })
+})
+
 Router.post('/login', function (req, res) {
   const {user, pwd} = req.body;
   User.findOne({user, pwd: md5Pwd(pwd)}, _filter, function (err, doc) {
