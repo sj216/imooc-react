@@ -8,7 +8,7 @@ const AUTH_SUCCESS = 'AUTH_SUCCESS';
 const initState = {
   msg: '', // 返回的msg
   user: '', // 用户名
-  type: '', // 用户类型
+  type: '', // 用户类型F
   redirectTo: '', // 登陆成功之后用户需要跳转的页面
 };
 
