@@ -4,6 +4,7 @@ import {getRedirectPath} from '../util';
 const ERROR_MSG = 'ERROR_MSG';
 const LOAD_DATA = 'LOAD_DATA';
 const AUTH_SUCCESS = 'AUTH_SUCCESS';
+const LOGOUT = 'LOGOUT';
 
 const initState = {
   msg: '', // 返回的msg
@@ -21,6 +22,8 @@ export function user(state = initState, action) {
       return {...state, msg: '', ...action.payload};
     case ERROR_MSG:
       return {...state, isAuth: false, msg: action.msg};
+    case LOGOUT:
+      return {...initState, redirectTo: '/login'};
     default:
       return state;
   }
@@ -87,4 +90,9 @@ export function update(data) {
         }
       })
   }
+}
+
+// 清空redux中的数据
+export function logoutSubmit() {
+  return {type: LOGOUT}
 }
